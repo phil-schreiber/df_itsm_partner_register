@@ -1,0 +1,74 @@
+<T3DataStructure>
+  <meta>
+    <langDisable>1</langDisable>
+  </meta>
+	<sheets>
+		<sDEF>
+			<ROOT>
+				<TCEforms>
+				<sheetTitle>Konfiguration</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+                                    <whattodisplay>
+						<TCEforms>
+							<label>Anzeigemodus</label>
+							<onChange>reload</onChange>
+								<config>
+									<type>select</type>
+										<items type="array">
+                                                                                <numIndex index="0" type="array">
+                                                                                        <numIndex index="0">Partner Bestellung</numIndex>
+                                                                                        <numIndex index="1">0</numIndex>
+                                                                                </numIndex>
+                                                                                <numIndex index="1" type="array">
+                                                                                        <numIndex index="0">Bestellungsübersicht</numIndex>
+                                                                                        <numIndex index="1">1</numIndex>
+                                                                                </numIndex>
+
+                						</items>
+								</config>
+							</TCEforms>
+					</whattodisplay>
+		            <userStorage>
+		             <TCEforms>
+		               <label>userStorage</label>
+		               <config>
+		                 <type>group</type>
+		                 <internal_type>db</internal_type>
+		                 <allowed>pages</allowed>
+		                 <size>1</size>
+		                 <minitems>1</minitems>
+		                 <maxitems>1</maxitems>
+		               </config>		               
+		             </TCEforms>
+		            </userStorage>		    
+             <templateFile>
+			<TCEforms>
+				<label>Template File</label>
+				<config>
+					<type>input</type>
+					<eval>trim</eval>
+					<default></default>
+					<wizards type="array">
+						<_PADDING>2</_PADDING>
+						<link type="array">
+							<type>popup</type>
+							<title>Link</title>
+							<icon>link_popup.gif</icon>
+							<script>browse_links.php?mode=wizard&amp;act=file</script>
+							<params type="array">
+								<blindLinkOptions>page,url,mail,spec</blindLinkOptions>
+								<allowedExtensions>htm,html,tmpl,tpl</allowedExtensions>
+							</params>
+							<JSopenParams>height=300,width=500,status=0,menubar=0,scrollbars=1</JSopenParams>
+						</link>
+					</wizards>
+				</config>				
+			</TCEforms>
+		 </templateFile>
+		</el>
+	  </ROOT>
+    </sDEF>
+  </sheets>
+</T3DataStructure>

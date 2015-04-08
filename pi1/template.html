@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+
+<!-- ###JSCRIPT### -->
+
+<script type="text/javascript" src="typo3conf/ext/df_itsm_partner_register/res/jquery.isotope.min.js"></script>
+<script type="text/javascript">
+var filler1="Bitte wählen Sie zuerst ein Seminar aus...";
+var filler2="Bitte wählen Sie zuerst ein Datum und Ort aus...";
+
+function modifySeatDetails(seatNumber){
+	currentSeatCount = jQuery('#partner_register_select_seats tbody tr').length;
+	if(seatNumber > currentSeatCount){
+		for(i = currentSeatCount;i<seatNumber;i++){
+
+			jQuery('#partner_register_select_seats tbody tr:first').clone().appendTo('#partner_register_select_seats tbody');
+			jQuery('#partner_register_select_seats tbody tr:last').find('input.attendee_firstname').attr('name','firstname_'+ i);
+			jQuery('#partner_register_select_seats tbody tr:last').find('input.attendee_lastname').attr('name','lastname_'+ i);
+			jQuery('#partner_register_select_seats tbody tr:last').find('input.attendee_testcost').attr('name','testcost_'+ i);
+		}
+
+		jQuery('#partner_register_form').validate({
+						rules: {
+							'firstname[]': {
+								required: true,
+								minlength: 1
+							},
+							'lastname[]': {
+								required: true,
+								minlength: 1
+							}
+						},
+						messages: {
+							'firstname[]': {
+								required: "Dies ist ein Pflichtfeld"
+							},
+							'lastname[]': {
+								required: "Dies ist ein Pflichtfeld"
+							}
+						}
+					});
+
+	}else if(seatNumber < currentSeatCount){
+		var indexValue = seatNumber - 1;
+		jQuery('#partner_register_select_seats tbody tr:gt('+ indexValue +')').remove();
+	}
+
+
+
+}
+
+jQuery(document).ready(function() {
+  jQuery('#partner_register_category_select').change(function(){
+  	jQuery(this).next('.chzn-container-single').css('width','100%');
+	jQuery("#ajax-loader").toggleClass('invisible');
+  	var formdata=jQuery("#partner_register_category_select").serialize();
+	jQuery.ajax({
+				url: '###PATH###?eID=getSeminarsList',
+				cache: false,
+				data: formdata,
+				type: 'POST',
+				success: function(data) {
+					jQuery('#partner_register_form_select_date').addClass('invisible');
+					jQuery("#partner_register_form_select_number").addClass('invisible');
+					jQuery('#partner_register_price').addClass('invisible');
+					jQuery('#partner_register_number_select').addClass('invisible');
+					jQuery('#partner_register_select_seats').addClass('invisible');
+					jQuery('#partner_register_seminar_select').html(data);
+					jQuery('#partner_register_seminar_select').removeClass('invisible');
+					jQuery('#partner_register_form_select_seminars .placeholder').addClass('invisible');
+                                        applyIsotope();
+
+					jQuery("#ajax-loader").toggleClass('invisible');
+				},
+				error: function(){
+					alert("Connection failed");
+				}
+			});
+
+
+
+});
+
+jQuery('#partner_register_category_select').chosen({
+		     	   	'placeholder_text_single':'Bitte wählen Sie die gewünschte Schulungs-Kategorie',
+		     	   	'disable_search':true,
+		     	   	'allow_single_deselect': true
+		     	   });
+
+jQuery("#partner_register_number_select").change(function(){
+	jQuery("#ajax-loader").toggleClass('invisible');
+  	var formData=jQuery("#partner_register_number_select,#partner_register_dates_select").serialize();
+    var seatCount = jQuery('#partner_register_number_select').val();
+	jQuery.ajax({
+				url: '###PATH###?eID=getPrice',
+				cache: false,
+				data: formData,
+				type: 'POST',
+				success: function(data) {
+					jQuery('#partner_register_price').html(data);
+					jQuery('#partner_register_price').removeClass("invisible");
+					jQuery('#partner_register_select_seats').removeClass("invisible");
+
+					modifySeatDetails(seatCount);
+
+
+					jQuery('#partner_register_message').removeClass("invisible");
+					jQuery('#partner_register_submit').removeClass("invisible");
+
+					jQuery("#ajax-loader").toggleClass('invisible');
+				},
+				error: function(){
+					alert("Connection failed");
+				}
+			});
+});
+
+
+
+jQuery("#partner_register_submit").click(function(e){
+	e.preventDefault();
+
+	if(jQuery('#partner_register_form').valid()){
+		var formdata=jQuery("#partner_register_form").serialize();
+
+			jQuery.ajax({
+				url: '###PATH###?eID=order',
+				cache: false,
+				data: formdata,
+				type: 'POST',
+				success: function(data) {
+					if(data){
+						jQuery('#thankYou').removeClass('invisible');
+						jQuery('.tx-dfitsmpartnerregister-pi1 .content_element').addClass('invisible');
+						jQuery('#partner_register_form_wrap').addClass('invisible');
+
+					}
+				},
+				error: function(){
+					alert("Connection  failed");
+				}
+			});
+	}
+
+
+
+})
+
+
+
+
+jQuery('#showHideBaseData').click(function(e){
+	jQuery('#baseData').toggleClass('invisible');
+});
+
+});
+var dingens=0;
+function applyIsotope(){
+    			jQuery('.itsm-event-item').removeClass('listrow-odd');
+								  jQuery('#list-items .itsm-event-item:not(".isotope-hidden"):odd tr').addClass('listrow-odd');
+				jQuery('#selector_widget_cities_select').chosen({
+				     	   'placeholder_text_multiple':'Ort auswählen',
+				     	   'disable_search':true
+				    });
+					jQuery('#selector_widget_categories_select').chosen({
+				     	   'placeholder_text_multiple':'Themengebiete auswählen',
+				     	   'disable_search':true,
+				     	   change: function(){
+
+
+
+				     	   }
+				     	   });
+				  jQuery('#tx_seminars_pi1-from_month').chosen({
+     	   			'placeholder_text_single':'Monat',
+				    	   	'disable_search':true,
+				     	   	'allow_single_deselect': true
+				});
+
+
+				jQuery('#tx_seminars_pi1-from_year').chosen({
+				     	   	'placeholder_text_single':'Jahr',
+				     	   	'disable_search':true,
+				     	   	'allow_single_deselect': true
+				});
+				jQuery('#partner_register_form_select_seminars .chzn-container-multi').css('width','200px');
+		     	   jQuery('#partner_register_form_select_seminars .chzn-container-multi input.default').css('width','180px');
+		     	   jQuery('#partner_register_form_select_seminars .chzn-container-single').css('width','100px');
+		     	   jQuery('#partner_register_form_select_seminars .chzn-container-single input.default').css('width','80px');
+
+
+				   jQuery('#selector_widget_categories_select, #selector_widget_cities_select, #tx_seminars_pi1-from_month, #tx_seminars_pi1-from_year').on('change', function(evt, params) {
+							var selectedCat = [];
+							var selectedCit = [];
+							var selected = [];
+				     	   	jQuery('#selector_widget_categories_select').find('option:selected').each(function(){
+				     	   		selectedCat.push('.' + jQuery(this).val());
+							});
+
+							jQuery('#selector_widget_cities_select').find('option:selected').each(function(){
+				     	   		selectedCit.push('.' + jQuery(this).val());
+							});
+
+							if(selectedCat.length > 0 && selectedCit.length > 0){
+								jQuery.each(selectedCat, function(index, value) {
+									var currentCat = value;
+
+									jQuery.each(selectedCit, function(indexC, valueC) {
+										var combinedFilter = value +''+ valueC;
+										selected.push(combinedFilter);
+									});
+								});
+							} else if(selectedCat.length > 0 && selectedCit.length == 0){
+								jQuery.each(selectedCat, function(index, value) {
+									var currentCat = value;
+									selected.push(value);
+								});
+							} else if(selectedCat.length == 0 && selectedCit.length > 0){
+								jQuery.each(selectedCit, function(index, value) {
+									var currentCit = value;
+									selected.push(value);
+								});
+							}
+
+							var selectedMonth = jQuery('#tx_seminars_pi1-from_month option:selected').val();
+							var selectedYear = jQuery('#tx_seminars_pi1-from_year option:selected').val();
+
+
+
+							if(jQuery('#tx_seminars_pi1-from_month option:selected').val() && jQuery('#tx_seminars_pi1-from_year option:selected').val() && selected.length > 0){
+								var timerange = selectedYear +''+ selectedMonth;
+								var newSelected = [];
+								jQuery.each(selected, function(index,value){
+									newSelected.push(value +'.date'+ timerange);
+								});
+
+								selected = newSelected;
+
+							}else if(jQuery('#tx_seminars_pi1-from_month option:selected').val() == '' && jQuery('#tx_seminars_pi1-from_year option:selected').val() && selected.length > 0) {
+								var timerange = selectedYear;
+
+								var newSelected = [];
+								jQuery.each(selected, function(index,value){
+									newSelected.push(value +'.year'+ timerange);
+								});
+
+								selected = newSelected;
+
+							}else if(jQuery('#tx_seminars_pi1-from_month option:selected').val() && jQuery('#tx_seminars_pi1-from_year option:selected').val() && selected.length == 0){
+								var timerange = selectedYear +''+ selectedMonth;
+								var newSelected = [];
+								jQuery.each(selected, function(index,value){
+									newSelected.push(value +'.date'+ timerange);
+								});
+
+								selected = newSelected;
+
+							}else if(jQuery('#tx_seminars_pi1-from_month option:selected').val() == '' && jQuery('#tx_seminars_pi1-from_year option:selected').val() && selected.length == 0) {
+								var timerange = selectedYear;
+
+								var newSelected = [];
+								jQuery.each(selected, function(index,value){
+									newSelected.push(value +'.year'+ timerange);
+								});
+
+								selected = newSelected;
+
+							}
+
+							onAnimationFinished = function(){
+							      jQuery('.itsm-event-item').removeClass('listrow-odd');
+								  jQuery('#list-items .itsm-event-item:not(".isotope-hidden"):odd tr').addClass('listrow-odd');
+							  };
+
+
+							jQuery('#list-items').isotope({ filter: selected.join(',')},onAnimationFinished);
+
+
+							 });
+							 jQuery(".chooseSeminar").click(function(){
+								jQuery(this).parents('.itsm-event-item').siblings('.itsm-event-item').hide();
+								jQuery('#list-items').css('height','50px');
+								jQuery("#ajax-loader").toggleClass('invisible');
+								jQuery(this).hide();
+								var itemId=jQuery(this).attr("id");
+								var itemIdArr=itemId.split('_');
+							  	var formdata="&date="+itemIdArr[1];
+							  	jQuery('#partner_register_dates_select').val(itemIdArr[1]);
+								jQuery.ajax({
+											url: '###PATH###?eID=getVacancies',
+											cache: false,
+											data: formdata,
+											type: 'POST',
+											success: function(data) {
+												jQuery('#partner_register_number_select').html(data);
+
+												jQuery('#partner_register_form_select_number').removeClass('invisible');
+												jQuery('#partner_register_number_select').removeClass('invisible');
+												jQuery('#partner_register_form_select_number .placeholder').addClass('invisible');
+
+
+												jQuery("#ajax-loader").toggleClass('invisible');
+											},
+											error: function(){
+												alert("Connection failed");
+											}
+										});
+								});
+
+
+}
+</script>
+<!-- ###JSCRIPT### -->
+	</head>
+
+	<body>
+<!-- ###FORM-TEMPLATE### begin-->
+
+
+<div class="content_element">
+      <h1>Willkommen auf unserem Partner-Portal für das Schulungsangebot.</h1>
+
+      ###IMAGECODE###<p>###SALUTATION### ###USER_LASTNAME###,</p>
+      <p>bitte nutzen Sie das nachfolgende Formular, um Teilnehmer für die entsprechenden Schulungen zu buchen. Geben Sie hierzu bitte die Teilnehmerdaten an und wählen Sie die entsprechende Schulung sowie den Schulungstermin und Schulungsort.</p>
+<p>Ihre individuellen Konditionen werden im Rahmen des Buchungsvorgangs berücksichtigt und vor Abschluss der Buchung angezeigt.</p>
+<p>Wenn Sie einen Überblick über Ihre bisher gebuchten Schulungen erhalten möchten, <a title="Opens internal link in current window" class="internal-link" href="schulungen/anmeldung-partner/partner-bestelluebersicht/">klicken Sie bitte hier</a>.</p>
+        <div>
+        </div>
+        </div>
+
+<div id="partner_register_form_wrap">
+<form id="partner_register_form" name="partner_register_form" method="post">
+	<input type="button" id="showHideBaseData" value="Ihre im System hinterlegten Daten anzeigen/ausblenden">
+	<div id="baseData" class="invisible">
+	<label for="last_name">Nachname: </label>
+	<input type="text" name="last_name" value="###USER_LASTNAME###"><br>
+	<label for="first_name">Vorname:</label>
+	<input name="first_name" type="text" value="###USER_FIRSTNAME###"><br>
+	<label for="first_name">Unternehmen:</label>
+	<input name="first_name" type="text" value="###USER_COMPANY###"><br>
+	<label for="email">Email:</label>
+	<input name="email" type="text" value="###USER_EMAIL###"><br>
+	<label for="phone">Telefon:</label>
+	<input name="phone" type="text" value="###USER_PHONE###"><br>
+	</div>
+
+	<br /><br />
+	<h2>Schulungen buchen</h2>
+	<label><strong>Kategorien:</strong></label><br />
+	<select id="partner_register_category_select" name="categories" class="chosen" style="width:100%">
+		<option value="0">Bitte auswählen</option>
+		<!-- ###CATEGORIES### -->
+		<option value="###CATEGORY_ID###">###CATEGORY_TITLE###
+			</option>
+		<!-- ###CATEGORIES### -->
+	</select><br /><br /><br />
+
+
+
+
+	<div id="partner_register_form_select_seminars">
+		<label><strong>Seminare:</strong></label><br /><br />
+		<div class="placeholder">Bitte wählen Sie zuerst eine Kategorie aus...</div>
+                <div id="partner_register_seminar_select" class="invisible">
+
+                </div>
+
+        </div>
+	<br>
+
+
+
+
+
+	<div id="partner_register_form_select_number" class="invisible">
+		<label>Anzahl der Plätze:</label>
+		<div class="placeholder"></div><select id="partner_register_number_select" class="invisible" name="amount"></select>
+		<input type="hidden" id="partner_register_dates_select" name="date" value="">
+	</div>
+
+    <div id="partner_register_select_seats" class="invisible">
+    	<label>Bitte geben Sie die Namen der Teilnehmer an<br /><br /></label>
+
+        <div class="seats_details">
+        	<table id="seats_details_table">
+            	<thead>
+                <tr>
+                <th style="text-align:left">
+                	Vorname
+                </th>
+                <th width="15"></th>
+                <th style="text-align:left">
+                	Nachname
+                </th>
+                <th width="15"></th>
+                <th style="text-align:left">
+                	inkl. Prüfungsteilnahme<br />
+                	<em style="font-size:10px;">(####TEST_COSTS_### pro Teilnehmer)</em>
+                </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="details_row">
+                	<td>
+                    	<input type="text" name="firstname_0" class="attendee_firstname required"/>
+                    </td>
+                    <td></td>
+                    <td>
+                    	<input type="text" name="lastname_0" class="attendee_lastname required"/>
+                    </td>
+                    <td></td>
+                    <td>
+                    	<input type="checkbox" name="testcost_0" class="attendee_testcost" />
+                    </td>
+                </tr>
+            	</tbody>
+            </table>
+
+        </div>
+
+
+    </div>
+
+	<br>
+	<img src="typo3conf/ext/df_itsm_partner_register/res/ajax-loader.gif" id="ajax-loader" class="invisible" alt=""/><br>
+	<div id="partner_register_price" class="invisible"></div><br>
+	<div id="partner_register_message" class="invisible">
+	<label for="message">Nachricht:</label><br>
+
+	<textarea name="message"></textarea>
+	</div>
+	<input type="submit" id="partner_register_submit" class="partner_register_submit invisible" value="Kostenpflichtig für den angegebenen Gesamtpreis buchen" >
+
+	<input type="hidden" name="usergroup" value="###USER_GROUP###">
+	<input type="hidden" name="userid" value="###USER_ID###">
+
+</form>
+</div>
+<div id="thankYou" class="invisible">
+	<h1>Vielen Dank für Ihre Reservierung</h1>
+<p>Eine Bestätigung mit den entsprechenden Daten haben Sie an die angegebene Mailadresse erhalten.</p>
+<p>Die Rechnung wird Ihnen schriftlich zugestellt.</p>
+<a href="###PATH###" class="partner_register_submit">weitere Buchung vornehmen</a>
+<a href="###PATH-DATA###" class="partner_register_submit">Übersicht anzeigen</a>
+</div>
+<!-- ###FORM-TEMPLATE### end-->
+<!-- ###SEMINARY-TEMPLATE### begin-->
+
+		<option value="0">Bitte auswählen</option>
+		<!-- ###SEMINAR-ITEM### -->
+		<option value="###SEMINAR_ID###">###SEMINAR_TITLE###</option>
+		<!-- ###SEMINAR-ITEM### -->
+
+
+
+
+<!-- ###SEMINARY-TEMPLATE### end-->
+
+<!-- ###DATES-TEMPLATE### begin-->
+
+		<option value="0">Bitte auswählen</option>
+		<!-- ###DATE-ITEM### -->
+		<option value="###DATE_ID###">###DATE_TITLE###</option>
+		<!-- ###DATE-ITEM### -->
+
+
+
+
+<!-- ###DATES-TEMPLATE### end-->
+
+<!-- ###AMOUNT-TEMPLATE### begin-->
+
+		<option value="0">Bitte auswählen</option>
+		<!-- ###AMOUNT-ITEM### -->
+		<option value="###AMOUNT###">###AMOUNT###</option>
+		<!-- ###AMOUNT-ITEM### -->
+
+
+
+
+<!-- ###AMOUNT-TEMPLATE### end-->
+
+<!-- ###PRICE-TEMPLATE### begin-->
+<table style="width:100%;text-align: left;"><tr>
+	<td width="25%">Grundpreis ohne Rabatt:</td><td><span style="text-decoration:line-through;">###BASEPRICE###</span> € zzgl. MwSt.</td>
+	</tr>
+	<tr><td width="25%">Gesamtpreis ohne Rabatt:</td><td><span style="text-decoration:line-through;">###BASECOMPLETE###</span> € zzgl. MwSt.</td></tr>
+</table>
+<br><br>
+<h1>Ihr Preis mit ###RABATT###% Rabatt:</h1>
+<table style="font-weight:bold;width:100%;text-align: left;font-size: 14px"><tr>
+	<td width="25%">Ihr Grundpreis:</td><td>###PRICE### € zzgl. MwSt.</td>
+	</tr>
+	<tr><td width="25%">Ihr Gesamtpreis:</td><td >###COMPLETE### € zzgl. MwSt.</td></tr>
+</table>
+
+
+<!-- ###PRICE-TEMPLATE### end-->
+
+<!-- ###MAIL-PLAIN### begin-->
+Sehr geehrte(r) ###LAST_NAME###,
+
+vielen Dank für Ihre Reservierung. Folgende Daten wurden aufgenommen:
+
+Veranstaltung:
+###SEMINAR-DATA###
+
+Anzahl der gebuchten Plätze:
+###AMOUNT###
+
+Rechnungssumme exklusive Mehrwertsteuer:
+###PRICE### Euro
+
+Sie erhalten in kürze die Rechnung auf schriftlichem Wege.
+Für Rückfragen stehen wir Ihnen jederzeit gerne zur Verfügung.
+mit freundlichen Grüßem
+Ihr ITSM Consulting Team
+Tel. + 49 6135 93340
+info@itsm-consulting.de
+
+
+
+<!-- ###MAIL-PLAIN### end-->
+<!-- ###MAIL### begin-->
+<p>Sehr geehrte(r) ###LAST_NAME###,</p>
+
+<p>vielen Dank für Ihre Reservierung. Folgende Daten wurden aufgenommen:</p>
+<p>
+Veranstaltung:<br> ###SEMINAR-DATA###<br><br>
+Anzahl der gebuchten Plätze: <br>
+###AMOUNT###<br>
+</p>
+<p>Rechnungssumme exklusive Mehrwertsteuer:<br>
+###PRICE### Euro<br>
+</p>
+<p>
+Sie erhalten in kürze die Rechnung auf schriftlichem Wege.</p>
+<p>
+Für Rückfragen stehen wir Ihnen jederzeit gerne zur Verfügung.</p>
+<p>
+mit freundlichen Grüßem<br>
+Ihr ITSM Consulting Team<br>
+Tel. + 49 6135 93340<br>
+info@itsm-consulting.de</p>
+
+
+
+<!-- ###MAIL### end-->
+<!-- ###OVERVIEW-TEMPLATE### -->
+<h1>Ihre bisherigen Buchungen:</h1>
+
+<table class="overViewTable" style="margin-left:2px;border:none">
+	<thead>
+		<tr><th style="text-align:left">Bestelldatum</th><th style="text-align:left">Veranstaltung</th><th style="text-align:left">Datum</th><th style="text-align:left">Ort</th><th style="text-align:left">Plätze</th><th></th></tr>
+	</thead>
+	<tbody>
+		<!-- ###ORDER-ITEM### -->
+		<tr><td>###ORDER-DATE###</td><td>###SEMINAR###</td><td>###SEMINAR-DATE###</td><td>###ADDRESS###</td><td>###AMOUNT###</td><td>
+		<a href="#" class="overlay_trigger buttonlink" rel="#details###UID###" style="position:auto;height:10px;left:0;top:10px">Details</a>
+		<div class="simple_overlay content_overlay" id="details###UID###">
+			<h1>###SEMINAR###</h1>
+			<p>###DESCRIPTION###</p>
+			<table>
+				<tr>
+				<td width="140px" style="vertical-align:top">
+					<strong>Gesamtpreis</strong>
+				</td>
+				<td  style="vertical-align:top">
+					###PRICE###
+				</td>
+				</tr>
+				<tr><td colspan="2">&nbsp;</td></tr>
+				<tr>
+				<td width="140px" style="vertical-align:top">
+					<strong>Schulungsort</strong>
+				</td>
+				<td  style="vertical-align:top">
+					###LOCATION###
+				</td>
+				</tr>
+				<tr><td colspan="2">&nbsp;</td></tr>
+				<tr>
+				<td width="140px" style="vertical-align:top">
+					<strong>Anzahl Teilnehmer</strong>
+				</td>
+				<td  style="vertical-align:top">
+					###SEATS###
+				</td>
+				</tr>
+				<tr><td colspan="2">&nbsp;</td></tr>
+					<tr>
+				<td width="140px" style="vertical-align:top">
+					<strong>Teilnehmer</strong>
+				</td>
+				<td  style="vertical-align:top">
+					###ATTENDEES###
+				</td>
+				</tr>
+			</table>
+		</div>
+
+
+		</td></tr>
+		<!-- ###ORDER-ITEM### -->
+	</tbody>
+</table>
+
+<script>
+	jQuery(document).ready(function(){
+		jQuery('.overViewTable tr:odd').addClass('listrow-odd');
+	});
+</script>
+
+
+<!-- ###OVERVIEW-TEMPLATE### -->
+
+<!-- ###SEMINARS-TEMPLATE### -->
+<div class="tx-seminars-pi1-selectorwidget">
+
+	<table style="width:auto">
+		<tbody><tr>
+			<td width="230" valign="top" style="vertical-align:top">
+
+		<div id="selector_widget_categories">
+		<select id="selector_widget_categories_select" multiple="multiple" class="chzn-done" style="display: none;">
+                <!-- ###CATEGORY-OPTIONS### -->
+		<option value="category###CATEGORY-NOSPACES###">###CATEGORY###</option>
+                <!-- ###CATEGORY-OPTIONS### -->
+                </select>
+
+	</div>
+			</td>
+			<td width="230" valign="top" style="vertical-align:top">
+		<div id="selector_widget_cities">
+		<select id="selector_widget_cities_select" multiple="multiple" class="chzn-done" style="display: none;">
+                    <!-- ###CITIES### -->
+		<option value="city###CITY###">###CITY###</option>
+                    <!-- ###CITIES### -->
+                </select>
+
+	</div>
+			</td><td>
+			</td><td width="230" valign="top" style="vertical-align:top">
+			<div id="selector_widget_time">
+
+		<select name="tx_seminars_pi1[from_month]" id="tx_seminars_pi1-from_month" size="1" class="chzn-done" style="display: none;"><option val="" selected="selected"> </option><option></option>
+	<option value="01">Januar</option>
+
+			<option value="02">Februar</option>
+
+			<option value="03">März</option>
+
+			<option value="04">April</option>
+
+			<option value="05">Mai</option>
+
+			<option value="06">Juni</option>
+
+			<option value="07">Juli</option>
+
+			<option value="08">August</option>
+
+			<option value="09">September</option>
+
+			<option value="10">Oktober</option>
+
+			<option value="11">November</option>
+
+			<option value="12">Dezember</option>
+
+		</select>
+
+
+		<select name="tx_seminars_pi1[from_year]" id="tx_seminars_pi1-from_year" size="1" class="chzn-done" style="display: none;">
+
+			<option val="" selected="selected"> </option><option></option>
+
+
+			<option value="2013">2013</option>
+
+			<option value="2014">2014</option>
+
+		</select>
+
+	</div>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td colspan="3">&nbsp;</td>
+		</tr>
+	</tbody></table>
+	</div>
+    <div class="tx-seminars-pi1-listrow">
+	<table style="width:750px">
+		<thead>
+			<tr>
+<th width="220" scope="col" class="tx-seminars-pi1-title">Titel</th>
+      <th width="200" scope="col">Datum</th>
+      <th width="70" scope="col">Preis<br />
+      <small style="font-weight:normal;font-style:italic;font-size:10px;">inkl. Rabatt</small></th>
+      <th width="150" scope="col">Ort</th>
+      <th width="100" scope="col">&nbsp;</th>
+	</tr>
+		</thead>
+		</table>
+   </div>
+<div id="list-items"  style="position: relative; overflow: hidden; ">
+<!-- ###SEMINAR-ITEM### -->
+			<div class="itsm-event-item isotope-item  city###CITY-TITLE### date###SPEC-DATE### year###YEAR### category###CAT-NO-SPACES###">
+				<table style="width:750px" class="tx-seminars-pi1-listrow">
+			<tbody><tr>
+      <td width="220" class="tx-seminars-pi1-title" style="vertical-align:top"><a href="schulungen/detailansicht/?tx_seminars_pi1%5BshowUid%5D=###SEMINAR-ID###&nobooking=1" target="_blank" style="font-weight:normal">###SEMINAR-TITLE###</a>
+</td>
+<td width="200" class="tx-seminars-pi1-date" style="vertical-align:top">###SEMINAR-DATE###</td>
+
+<td width="70" class="tx-seminars-pi1-price" style="vertical-align:top;text-align:left" >€ ###SEMINAR-PRICE###</td>
+      <td width="150" style="vertical-align:top">###CITY-TITLE###</td>
+      <td width="100" style="vertical-align:top"><input type="button" class="chooseSeminar buttonlink" id="seminar_###SEMINAR-ID###" style="cursor:pointer" value="Buchen"></td>
+			</tr>
+			</tbody></table>
+			</div>
+<!-- ###SEMINAR-ITEM### -->
+</div>
+</div>
+</div>
+<!-- ###SEMINARS-TEMPLATE### -->
+	</body>
+	</html>

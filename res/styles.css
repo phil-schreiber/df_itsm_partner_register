@@ -1,0 +1,43 @@
+.tx-dfitsmpartnerregister-pi1 label{
+	width:100%;
+}
+
+.tx-dfitsmpartnerregister-pi1 input, .tx-dfitsmpartnerregister-pi1 select,.tx-dfitsmpartnerregister-pi1 textarea, .placeholder{
+	width:100%;
+	border:1px solid #2d476a;
+	margin-bottom:10px;
+}
+
+.tx-dfitsmpartnerregister-pi1 input.buttonlink {
+	border:none;	
+}
+
+.placeholder{
+	padding:5px 0px 5px 5px;
+}
+.invisible{
+	display:none;
+}
+
+.visible{
+	display:block;
+}
+
+.partner_register_submit{
+	background:#00448a;
+	padding:5px;
+	color:#fff;
+	font-weight:bold;
+	cursor:pointer;
+}
+
+.overViewTable{
+	width:100%;
+}
+
+.overViewTable td{
+	padding:5px;
+}
+#showHideBaseData{
+	cursor:pointer;
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'df_itsm_partner_register'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tx_dfitsmpartnerregister_partnerregistration">partnerregistration</label>
+			<label index="tx_dfitsmpartnerregister_partnerregistration.bookingdate">bookingdate</label>
+			<label index="tx_dfitsmpartnerregister_partnerregistration.seminarid">seminarid</label>
+			<label index="tx_dfitsmpartnerregister_partnerregistration.userid">userid</label>
+			<label index="tx_dfitsmpartnerregister_partnerregistration.usergroup">usergroup</label>
+			<label index="tx_dfitsmpartnerregister_partnerregistration.amount">amount</label>
+                        <label index="tx_dfitsmpartnerregister_partnerregistration.discount">discount</label>
+                        <label index="tx_dfitsmpartnerregister_partnerregistration.price">price</label>
+                        <label index="tx_dfitsmpartnerregister_partnerregistration.lastname">lastname</label>
+                        <label index="tx_dfitsmpartnerregister_partnerregistration.firstname">firstname</label>
+                        <label index="tx_dfitsmpartnerregister_partnerregistration.phone">phone</label>
+                        <label index="tx_dfitsmpartnerregister_partnerregistration.email">email</label>
+                        <label index="tx_dfitsmpartnerregister_partnerregistration.message">message</label>
+                        <label index="tx_dfitsmpartnerregister_partnerdiscount">partnerdiscount</label>
+                        <label index="tx_dfitsmpartnerregister_partnerdiscount.title">Rabattbezeichnung</label>
+                        <label index="tx_dfitsmpartnerregister_partnerdiscount.userid">Nutzer</label>
+                        <label index="tx_dfitsmpartnerregister_partnerdiscount.usergroup">usergroup</label>
+                        <label index="tx_dfitsmpartnerregister_partnerdiscount.discount">Discount in % (nur ganze Zahl eingeben)</label>
+                        <label index="tx_dfitsmpartnerregister_partnerdiscount.maxamount">Dieser Discount gilt ab X Reservierungen</label>                        
+                        <label index="tx_dfitsmpartnerregister_partnerdiscount.seminars">Seminare, für die der Discount gilt</label>
+			<label index="tt_content.list_type_pi1">DF Partner Seminaranmeldung</label>
+		</languageKey>
+	</data>
+</T3locallang>
